@@ -29,11 +29,18 @@ public class App {
             while(true){
                 Socket clientSocket = serverSocket.accept();
 
-                InputStream is = clientSocket.getInputStream();
+                new Thread(()->{
+                    try{
+                        InputStream is = clientSocket.getInputStream();
 
-                PacketReader.readPacket(is);
+                        PacketReader.readPacket(is);
 
-                clientSocket.close();
+                        clientSocket.close();
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }).start();
 
             }
 

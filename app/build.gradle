@@ -16,6 +16,10 @@ repositories {
 }
 
 dependencies {
+
+    // https://mvnrepository.com/artifact/com.ibm.icu/icu4j
+    implementation group: 'com.ibm.icu', name: 'icu4j', version: '74.2'
+
     // Use JUnit Jupiter for testing.
     testImplementation libs.junit.jupiter
 

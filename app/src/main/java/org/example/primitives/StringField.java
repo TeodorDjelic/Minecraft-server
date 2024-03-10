@@ -2,6 +2,7 @@ package org.example.primitives;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.example.binary.Masks;
 import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
@@ -19,15 +20,19 @@ public class StringField {
             throw new StringFieldLengthAboveCapacity(length.getValue(), maxLength);
         }
 
-        for(int i = 0; i < length.getValue(); i++){
+        byte[] data = is.readNBytes(length.getValue());
+
+        string = new String(data, StandardCharsets.UTF_8);
+
+        /*for(int i = 0; i < length.getValue(); i++){
             char c = getChar(is);
 
             if(c > '\uFFFF'){
                 i++;
             }
 
-            string += c;
-        }
+            string = c + string;
+        }*/
 
     }
 
@@ -35,30 +40,21 @@ public class StringField {
         return string;
     }
 
-    private static final byte TWO_BYTES_UTF8 = (byte) 0b1100_0000;
-    private static final byte THREE_BYTES_UTF8 = (byte) 0b1110_0000;
-    private static final byte FOUR_BYTES_UTF8 = (byte) 0b1111_0000;
+    /*private static final byte HAS_MORE_BYTES = (byte) 0b1000_0000;
 
     private static char getChar(InputStream is) throws IOException{
-        byte[] data = is.readNBytes(1);
+        byte[] data;
 
-        if(data.length == 0){
-            throw new IOException();
-        }
+        do{
+            data = is.readNBytes(1);
 
-        byte firstByte = data[0];
+            if(data.length == 0){
+                throw new IOException();
+            }
 
-        int numberOfCharsLeft;
-
-        if((firstByte & Masks.THREE_MOST_SIGNIFICANT_BITS_OF_BYTE) == TWO_BYTES_UTF8){
-            
-        }
+        }while((data[0] & Masks.TWO_MOST_SIGNIFICANT_BITS_OF_BYTE) == HAS_MORE_BYTES);
 
         return 0;
-    }
-
-    private static char getTheRestOfChars(InputStream is, int numberOfChars){
-
-    }
+    }*/
 
 }

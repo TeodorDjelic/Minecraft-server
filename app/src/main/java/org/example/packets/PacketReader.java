@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.example.primitives.VarIntField;
+import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
 
 public class PacketReader {
     
@@ -18,10 +19,11 @@ public class PacketReader {
         + ", data length: " + dataLength);
 
 
-        byte[] data = is.readNBytes(dataLength);
-
-        for(byte b: data){
-            System.out.println(b);
+        try {
+            HandshakePacket handshakePacket = new HandshakePacket(is, dataLength);
+        } catch (StringFieldLengthAboveCapacity e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
