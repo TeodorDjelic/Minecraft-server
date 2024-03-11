@@ -3,9 +3,7 @@ package org.example.primitives;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class UnsignedShortField {
-    
-    private short value;
+public class UnsignedShortField extends Field<Short> {
 
     public UnsignedShortField(InputStream is) throws IOException{
 
@@ -18,8 +16,14 @@ public class UnsignedShortField {
         value = (short) ((Byte.toUnsignedInt(data[0]) << 8) | Byte.toUnsignedInt(data[1]));
     }
 
-    public short getValue(){
-        return value;
+    @Override
+    public byte[] getBytes() {
+        byte[] data = new byte[2];
+
+        data[1] = (byte) value.shortValue();
+        data[0] = (byte) (value >>> 8);
+
+        return data;
     }
 
 }

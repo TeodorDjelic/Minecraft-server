@@ -3,14 +3,14 @@
  */
 package org.example;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.example.packets.PacketReader;
+import org.example.primitives.LongField;
 import org.example.primitives.VarIntField;
 
 public class App {
@@ -20,25 +20,60 @@ public class App {
 
     public static void main(String[] args) {
 
-        String hostName = args.length == 0 ? "127.0.0.1" : args[0];
-        int portNumber = args.length <= 1 ? 25565 : Integer.parseInt(args[1]);
+        int portNumber = args.length <= 1 ? 25565 : Integer.parseInt(args[0]);
+
+        ServerSocket serverSocket = null;
 
         try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
+            serverSocket = new ServerSocket(portNumber);
 
             while(true){
                 Socket clientSocket = serverSocket.accept();
 
                 new Thread(()->{
                     try{
-                        InputStream is = clientSocket.getInputStream();
 
-                        PacketReader.readPacket(is);
 
-                        clientSocket.close();
+                        System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " has connected.");
+
+                        while(!clientSocket.isClosed()){
+                            InputStream is = clientSocket.getInputStream();
+                            OutputStream os = clientSocket.getOutputStream();
+
+                            PacketReader.readPacket(is, os);
+                            
+                            VarIntField length = new VarIntField(is);
+                            VarIntField packetID = new VarIntField(is);
+
+                            if(packetID.getValue() == 1){
+
+                                LongField payload = new LongField(is);
+
+                                byte[] bytes = new byte[2];
+
+                                bytes[0] = (byte)(length.getValue().intValue());
+                                bytes[1] = 1;
+
+                                os.write(bytes);
+
+                                os.write(payload.getBytes());
+
+                            }
+
+                        }
                     }
                     catch(Exception e){
                         e.printStackTrace();
+                    }
+                    finally{
+                        if(!clientSocket.isClosed()){
+                            try {
+                                clientSocket.close();
+                            } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }).start();
 
@@ -47,7 +82,12 @@ public class App {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        finally{
+            try {
+                if(serverSocket != null && !serverSocket.isClosed())
+                    serverSocket.close();
+            } catch (IOException e) {e.printStackTrace();}
+        }
 
-        System.out.println(new App().getGreeting());
     }
 }
