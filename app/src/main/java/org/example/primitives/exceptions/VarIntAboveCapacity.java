@@ -1,6 +1,6 @@
 package org.example.primitives.exceptions;
 
-public class VarIntAboveCapacity extends Exception{
+public class VarIntAboveCapacity extends InvalidData{
     
     public VarIntAboveCapacity(){}
 

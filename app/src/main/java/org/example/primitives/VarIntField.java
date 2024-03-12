@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.example.binary.Masks;
+import org.example.primitives.exceptions.InvalidData;
 import org.example.primitives.exceptions.VarIntAboveCapacity;
 
 public class VarIntField extends Field<Integer> {
@@ -13,31 +14,12 @@ public class VarIntField extends Field<Integer> {
 
     private int length = 0;
 
-    public VarIntField(InputStream is) throws IOException, VarIntAboveCapacity{
+    public VarIntField(byte[] _data) throws InvalidData {
+        super(_data);
+    }
 
-        byte[] data;
-
-        value = 0;
-
-        do{
-
-            data = is.readNBytes(1);
-
-            if(data.length != 1){
-                throw new IOException();
-            }
-
-            int dataSegment = data[0] & ~Masks.MOST_SIGNIFICANT_BIT_OF_BYTE;
-            dataSegment <<= PAYLOAD_PER_BYTE * length;
-            length++;
-            value |= dataSegment;
-
-            if(length > 5){
-                throw new VarIntAboveCapacity();
-            }
-
-        }while((data[0] & Masks.MOST_SIGNIFICANT_BIT_OF_BYTE) != 0);
-
+    public VarIntField(int _value){
+        super(_value);
     }
 
     public int getLength(){
@@ -58,6 +40,23 @@ public class VarIntField extends Field<Integer> {
         outputStream.write((byte) (temp & 0x7F));
 
         return outputStream.toByteArray();
+    }
+
+    @Override
+    public void setBytes(byte[] data) throws VarIntAboveCapacity {
+        value = 0;
+
+        do{
+            int dataSegment = data[length] & ~Masks.MOST_SIGNIFICANT_BIT_OF_BYTE;
+            dataSegment <<= PAYLOAD_PER_BYTE * length;
+            length++;
+            value |= dataSegment;
+
+            if(length > 5){
+                throw new VarIntAboveCapacity();
+            }
+
+        }while((data[0] & Masks.MOST_SIGNIFICANT_BIT_OF_BYTE) != 0);
     }
 
 }

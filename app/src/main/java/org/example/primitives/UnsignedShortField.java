@@ -3,17 +3,16 @@ package org.example.primitives;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.example.primitives.exceptions.InvalidData;
+
 public class UnsignedShortField extends Field<Short> {
 
-    public UnsignedShortField(InputStream is) throws IOException{
+    public UnsignedShortField(byte[] _data) throws InvalidData{
+        super(_data);
+    }
 
-        byte[] data = is.readNBytes(2);
-
-        if(data.length != 2){
-            throw new IOException();
-        }
-
-        value = (short) ((Byte.toUnsignedInt(data[0]) << 8) | Byte.toUnsignedInt(data[1]));
+    public UnsignedShortField(short _value){
+        super(_value);
     }
 
     @Override
@@ -24,6 +23,16 @@ public class UnsignedShortField extends Field<Short> {
         data[0] = (byte) (value >>> 8);
 
         return data;
+    }
+
+    @Override
+    public void setBytes(byte[] data) throws InvalidData {
+        
+        if(data.length != 2){
+            throw new InvalidData();
+        }
+
+        value = (short) ((Byte.toUnsignedInt(data[0]) << 8) | Byte.toUnsignedInt(data[1]));
     }
 
 }

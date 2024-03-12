@@ -3,21 +3,12 @@ package org.example.primitives;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.example.primitives.exceptions.InvalidData;
+
 public class LongField extends Field<Long>{
 
-    public LongField(InputStream is) throws IOException{
-        byte[] data = is.readNBytes(8);
-
-        value = 0L;
-
-        if(data.length != 8){
-            throw new IOException();
-        }
-
-        for(int i = 0; i < 8; i++){
-            value <<= 8;
-            value |= Byte.toUnsignedLong(data[i]);
-        }   
+    public LongField(byte[] _data) throws InvalidData{
+        super(_data);
     }
 
     public LongField(Long _value){
@@ -36,6 +27,20 @@ public class LongField extends Field<Long>{
         }
 
         return data;
+    }
+
+    @Override
+    public void setBytes(byte[] data) throws InvalidData {
+        value = 0L;
+
+        if(data.length != 8){
+            throw new InvalidData();
+        }
+
+        for(int i = 0; i < 8; i++){
+            value <<= 8;
+            value |= Byte.toUnsignedLong(data[i]);
+        } 
     }
 
 }
