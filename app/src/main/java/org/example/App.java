@@ -4,16 +4,8 @@
 package org.example;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.example.packets.HandshakePacket;
-import org.example.packets.PingPacket;
-import org.example.packets.communication.Packeteer;
-import org.example.primitives.LongField;
-import org.example.primitives.VarIntField;
 import org.example.sessions.ClientConnection;
 
 public class App {

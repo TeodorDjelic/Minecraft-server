@@ -1,32 +1,11 @@
 package org.example.packets;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.example.primitives.StringField;
 import org.example.primitives.UnsignedShortField;
 import org.example.primitives.VarIntField;
 import org.example.primitives.exceptions.InvalidData;
-import org.example.primitives.exceptions.InvalidStringFieldFormat;
-import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
-import org.example.primitives.exceptions.VarIntAboveCapacity;
-import org.json.JSONObject;
-
-import com.google.common.primitives.Shorts;
-import com.ibm.icu.impl.Punycode;
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
-import com.ibm.icu.text.IDNA.Info;
-
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class HandshakePacket extends Packet {
 

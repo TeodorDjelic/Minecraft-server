@@ -1,14 +1,12 @@
 package org.example.packets.communication;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.IOException;
-import java.lang.Class;
-import java.lang.reflect.InvocationTargetException;
 
 import org.example.packets.Packet;
 import org.example.packets.PacketData;
-import org.example.sessions.ClientConnection;
 
 public class Packeteer {
 

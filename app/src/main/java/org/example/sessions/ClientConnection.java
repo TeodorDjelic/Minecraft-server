@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 
 import org.example.packets.communication.PacketDataCommunication;
-import org.example.packets.communication.Packeteer;
 import org.example.packets.communication.UncompressedPacketDataCommunication;
 import org.example.sessions.state.ClientState;
 import org.example.sessions.state.Handshaking;

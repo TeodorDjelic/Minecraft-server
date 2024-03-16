@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import org.example.packets.HandshakePacket;
 import org.example.packets.Packet;
-import org.example.packets.PingPacket;
 import org.example.packets.communication.Packeteer;
-import org.example.packets.communication.UncompressedPacketDataCommunication;
 import org.example.sessions.ClientConnection;
 
 // LEGACY STANDARD IS NOT BEING HANDLED

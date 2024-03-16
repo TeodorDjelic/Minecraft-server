@@ -1,15 +1,11 @@
 package org.example.primitives;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.example.binary.Masks;
 import org.example.primitives.exceptions.InvalidData;
 import org.example.primitives.exceptions.InvalidStringFieldFormat;
 import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
-import org.example.primitives.exceptions.VarIntAboveCapacity;
 
 public class StringField extends Field<String>{
     

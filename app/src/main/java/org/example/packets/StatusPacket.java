@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.example.primitives.StringField;
-import org.example.primitives.VarIntField;
 import org.example.primitives.exceptions.InvalidData;
 
 public class StatusPacket extends Packet {
