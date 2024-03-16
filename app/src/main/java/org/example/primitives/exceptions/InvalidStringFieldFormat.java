@@ -1,6 +1,6 @@
 package org.example.primitives.exceptions;
 
-public class InvalidStringFieldFormat extends Exception {
+public class InvalidStringFieldFormat extends InvalidData {
     
     public InvalidStringFieldFormat(){}
 

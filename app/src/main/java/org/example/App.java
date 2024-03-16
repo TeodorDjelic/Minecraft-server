@@ -9,9 +9,12 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.example.packets.PacketReader;
+import org.example.packets.HandshakePacket;
+import org.example.packets.PingPacket;
+import org.example.packets.communication.Packeteer;
 import org.example.primitives.LongField;
 import org.example.primitives.VarIntField;
+import org.example.sessions.ClientConnection;
 
 public class App {
     public String getGreeting() {
@@ -30,59 +33,14 @@ public class App {
             while(true){
                 Socket clientSocket = serverSocket.accept();
 
-                new Thread(()->{
-                    try{
+                ClientConnection clientConnection = new ClientConnection(clientSocket);
 
-
-                        System.out.println("Client " + clientSocket.getRemoteSocketAddress() + " has connected.");
-
-                        while(!clientSocket.isClosed()){
-                            InputStream is = clientSocket.getInputStream();
-                            OutputStream os = clientSocket.getOutputStream();
-
-                            PacketReader.readPacket(is, os);
-                            
-                            VarIntField length = new VarIntField(is);
-                            VarIntField packetID = new VarIntField(is);
-
-                            if(packetID.getValue() == 1){
-
-                                LongField payload = new LongField(is);
-
-                                byte[] bytes = new byte[2];
-
-                                bytes[0] = (byte)(length.getValue().intValue());
-                                bytes[1] = 1;
-
-                                os.write(bytes);
-
-                                os.write(payload.getBytes());
-
-                            }
-
-                        }
-                    }
-                    catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    finally{
-                        if(!clientSocket.isClosed()){
-                            try {
-                                clientSocket.close();
-                            } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
-
+                clientConnection.start();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally{
+        } finally {
             try {
                 if(serverSocket != null && !serverSocket.isClosed())
                     serverSocket.close();

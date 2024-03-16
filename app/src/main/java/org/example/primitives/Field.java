@@ -20,9 +20,12 @@ public abstract class Field<T> {
     public final T getValue(){
         return value;
     }
+    
+    public int getLength(){
+        return getBytes().length;
+    }
 
-    public abstract byte[] getBytes();
+    public abstract byte[] getBytes();    
     public abstract void setBytes(byte[] data) throws InvalidData;
-
 
 }
