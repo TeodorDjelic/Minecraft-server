@@ -13,6 +13,10 @@ public class HandshakePacket extends Packet {
     private StringField serverAddress;
     private UnsignedShortField serverPort;
     private VarIntField nextState;
+
+    public static enum NextState{
+        Status, Login, Unknown
+    }
     
     public HandshakePacket(PacketData _packetData) throws InvalidData {
         super(_packetData);   
@@ -66,8 +70,12 @@ public class HandshakePacket extends Packet {
         return serverPort.getValue();
     }
 
-    public int getNextState() {
-        return nextState.getValue();
+    public NextState getNextState() {
+        switch(nextState.getValue()){
+            case 1: return NextState.Status;
+            case 2: return NextState.Login;
+            default: return NextState.Unknown;
+        }
     }
 
     
