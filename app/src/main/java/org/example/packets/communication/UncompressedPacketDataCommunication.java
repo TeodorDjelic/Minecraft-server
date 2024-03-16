@@ -29,7 +29,7 @@ public class UncompressedPacketDataCommunication implements PacketDataCommunicat
     @Override
     public void sendPacketData(PacketData packet) throws IOException {
         VarIntField packetID = new VarIntField(packet.getPacketID());
-        byte[] data = packet.getData();
+        byte[] data = packet.getData().copyArray();
         VarIntField length = new VarIntField(data.length + packetID.getLength());
         
         OutputStream outputStream = clientConnection.getOutputStream();

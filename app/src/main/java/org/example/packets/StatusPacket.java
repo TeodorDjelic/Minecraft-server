@@ -30,7 +30,6 @@ public class StatusPacket extends Packet {
             e.printStackTrace();
         }
 
-
         StringField sf = new StringField(jsonResponseStringified);
 
         return new PacketData(0, sf.getBytes());

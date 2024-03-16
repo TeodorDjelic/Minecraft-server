@@ -1,11 +1,10 @@
 package org.example.packets;
 
-import java.util.Arrays;
-
 import org.example.primitives.StringField;
 import org.example.primitives.UnsignedShortField;
 import org.example.primitives.VarIntField;
 import org.example.primitives.exceptions.InvalidData;
+import org.example.structures.OffsetByteArray;
 
 public class HandshakePacket extends Packet {
 
@@ -30,32 +29,36 @@ public class HandshakePacket extends Packet {
 
     @Override
     protected void setPacketData(PacketData packetData) throws InvalidData {
-        byte[] data = packetData.getData();
+        OffsetByteArray data = packetData.getData();
 
-        int dataLength = data.length;
+        int dataLength = data.length();
         int current = 0;
 
-        this.protocolVersion = new VarIntField(
-            Arrays.copyOfRange(data, current, current + 5)
-        );
+        this.protocolVersion = new VarIntField(data);
 
         current += protocolVersion.getLength();
 
         this.serverAddress = new StringField(
-            Arrays.copyOfRange(data, current, dataLength),
+            data.offset(current),
             255);
 
         current += serverAddress.getLength();
 
         this.serverPort = new UnsignedShortField(
-            Arrays.copyOfRange(data, current, current + 2)
+            data.offset(current)
         );
 
         current += serverPort.getLength();
 
         this.nextState = new VarIntField(
-            Arrays.copyOfRange(data, current, dataLength)
+            data.offset(current)
         );
+
+        current += nextState.getLength();
+
+        if(current != dataLength){
+            throw new InvalidData();
+        }
     }
 
     public int getProtocolVersion() {

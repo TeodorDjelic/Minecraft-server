@@ -1,18 +1,21 @@
 package org.example.primitives;
 
+import org.example.binary.TypeSizes;
 import org.example.primitives.exceptions.InvalidData;
+import org.example.structures.OffsetByteArray;
 
-public class LongField extends Field<Long>{
+public class LongField {
 
-    public LongField(byte[] _data) throws InvalidData{
-        super(_data);
+    private long value;
+
+    public LongField(OffsetByteArray _data) throws InvalidData{
+        setBytes(_data);
     }
 
-    public LongField(Long _value){
-        super(_value);
+    public LongField(long _value){
+        this.value = _value;
     }
 
-    @Override
     public byte[] getBytes() {
         byte[] data = new byte[8];
 
@@ -26,18 +29,25 @@ public class LongField extends Field<Long>{
         return data;
     }
 
-    @Override
-    public void setBytes(byte[] data) throws InvalidData {
+    public void setBytes(OffsetByteArray data) throws InvalidData {
         value = 0L;
 
-        if(data.length != 8){
+        if(data.length() < 8){
             throw new InvalidData();
         }
 
         for(int i = 0; i < 8; i++){
             value <<= 8;
-            value |= Byte.toUnsignedLong(data[i]);
+            value |= Byte.toUnsignedLong(data.get(i));
         } 
+    }
+
+    public Long getValue() {
+        return value;
+    }
+
+    public int getLength() {
+        return TypeSizes.SIZE_OF_LONG;
     }
 
 }

@@ -7,22 +7,23 @@ import java.io.InputStream;
 import org.example.binary.Masks;
 import org.example.primitives.exceptions.InvalidData;
 import org.example.primitives.exceptions.VarIntAboveCapacity;
+import org.example.structures.OffsetByteArray;
 
-public class VarIntField extends Field<Integer> {
+public class VarIntField {
     
     private static final int PAYLOAD_PER_BYTE = 7;
 
-    public VarIntField(byte[] _data) throws InvalidData {
-        super(_data);
+    private int value;
+
+    public VarIntField(OffsetByteArray _data) throws InvalidData {
+        setBytes(_data);    
     }
 
     public VarIntField(int _value){
-        super(_value);
+        this.value = _value;
     }
 
     public VarIntField(InputStream is) throws IOException, VarIntAboveCapacity{
-        super(0);
-
         value = 0;
         int length = 0;
 
@@ -48,7 +49,6 @@ public class VarIntField extends Field<Integer> {
 
     }
 
-    @Override
     public byte[] getBytes() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -56,21 +56,22 @@ public class VarIntField extends Field<Integer> {
 
         while ((temp & 0xFFFFFF80) != 0L) {
             outputStream.write((byte) ((temp & 0x7F) | 0x80));
-            temp >>>= 7;
+            temp >>>= PAYLOAD_PER_BYTE;
         }
 
-        outputStream.write((byte) (temp & 0x7F));
+        if(value == 0 || temp != 0){
+            outputStream.write((byte) (temp & 0x7F));
+        }
 
         return outputStream.toByteArray();
     }
 
-    @Override
-    public void setBytes(byte[] data) throws VarIntAboveCapacity {
+    public void setBytes(OffsetByteArray data) throws VarIntAboveCapacity {
         value = 0;
         int length = 0;
 
         do{
-            int dataSegment = data[length] & ~Masks.MOST_SIGNIFICANT_BIT_OF_BYTE;
+            int dataSegment = data.get(length) & ~Masks.MOST_SIGNIFICANT_BIT_OF_BYTE;
             dataSegment <<= PAYLOAD_PER_BYTE * length;
             length++;
             value |= dataSegment;
@@ -79,7 +80,15 @@ public class VarIntField extends Field<Integer> {
                 throw new VarIntAboveCapacity();
             }
 
-        }while((data[length - 1] & Masks.MOST_SIGNIFICANT_BIT_OF_BYTE) != 0);
+        }while((data.get(length - 1) & Masks.MOST_SIGNIFICANT_BIT_OF_BYTE) != 0);
+    }
+
+    public int getValue(){
+        return value;
+    }
+
+    public int getLength(){
+        return getBytes().length;
     }
 
 }

@@ -1,35 +1,45 @@
 package org.example.primitives;
 
+import org.example.binary.TypeSizes;
 import org.example.primitives.exceptions.InvalidData;
+import org.example.structures.OffsetByteArray;
 
-public class UnsignedShortField extends Field<Short> {
+public class UnsignedShortField {
 
-    public UnsignedShortField(byte[] _data) throws InvalidData{
-        super(_data);
+    private short value;
+
+    public UnsignedShortField(OffsetByteArray _data) throws InvalidData{
+        setBytes(_data);
     }
 
     public UnsignedShortField(short _value){
-        super(_value);
+        this.value = _value;
     }
 
-    @Override
     public byte[] getBytes() {
         byte[] data = new byte[2];
 
-        data[1] = (byte) value.shortValue();
+        data[1] = (byte) value;
         data[0] = (byte) (value >>> 8);
 
         return data;
     }
 
-    @Override
-    public void setBytes(byte[] data) throws InvalidData {
+    public void setBytes(OffsetByteArray data) throws InvalidData {
         
-        if(data.length != 2){
+        if(data.length() < 2){
             throw new InvalidData();
         }
 
-        value = (short) ((Byte.toUnsignedInt(data[0]) << 8) | Byte.toUnsignedInt(data[1]));
+        value = (short) ((Byte.toUnsignedInt(data.get(0)) << 8) | Byte.toUnsignedInt(data.get(1)));
+    }
+
+    public Short getValue() {
+        return value;
+    }
+
+    public int getLength() {
+        return TypeSizes.SIZE_OF_SHORT;
     }
 
 }

@@ -1,5 +1,7 @@
 package org.example.packets;
 
+import org.example.structures.OffsetByteArray;
+
 public class PacketData {
     
     private int packetID;
@@ -14,8 +16,12 @@ public class PacketData {
         return packetID;
     }
 
-    public byte[] getData() {
-        return data;
+    public OffsetByteArray getData() {
+        return getData(0);
+    }
+
+    public OffsetByteArray getData(int offset){
+        return new OffsetByteArray(data, offset);
     }
 
 }

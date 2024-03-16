@@ -6,20 +6,22 @@ import java.util.Arrays;
 import org.example.primitives.exceptions.InvalidData;
 import org.example.primitives.exceptions.InvalidStringFieldFormat;
 import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
+import org.example.structures.OffsetByteArray;
 
-public class StringField extends Field<String>{
+public class StringField {
     
     private static final int MAX_MAX_STRING_LENGTH = 32767;
 
-    public StringField(byte[] _data, int _maxLength) throws InvalidData {
-        super(_data);
+    private String value;
+
+    public StringField(OffsetByteArray _data, int _maxLength) throws InvalidData {
+        setBytes(_data, _maxLength);
     }
 
     public StringField(String _value){
-        super(_value);
+        this.value = _value;
     }
 
-    @Override
     public byte[] getBytes() {
         VarIntField length = new VarIntField(value.length());
         byte[] a = length.getBytes();
@@ -31,26 +33,29 @@ public class StringField extends Field<String>{
         return result;
     }
 
-    @Override
-    public void setBytes(byte[] data) throws InvalidData {
+    public void setBytes(OffsetByteArray data, int maxLength) throws InvalidData {
 
-        int min = Math.min(data.length, 3);
+        VarIntField length = new VarIntField(data);
 
-        VarIntField length = new VarIntField(Arrays.copyOfRange(data, 0, min));
-
-        if(length.getValue() > MAX_MAX_STRING_LENGTH){
+        if(length.getValue() > maxLength || maxLength > MAX_MAX_STRING_LENGTH){
             throw new StringFieldLengthAboveCapacity(length.getValue(), MAX_MAX_STRING_LENGTH);
         }
 
-        if(length.getLength() + length.getValue() > data.length){
+        if(length.getLength() + length.getValue() > data.length()){
             throw new InvalidStringFieldFormat();
         }
 
-        byte[] temp = Arrays.copyOfRange(data,
-            length.getLength(),
-            length.getLength() + length.getValue());
+        ByteArrayField temp = new ByteArrayField(data.offset(length.getLength()), length.getValue());
 
-        value = new String(temp, StandardCharsets.UTF_8);
+        value = new String(temp.getBytes(), StandardCharsets.UTF_8);
+    }
+
+    public int getLength(){
+        return value.length() + new VarIntField(value.length()).getLength();
+    }
+
+    public String getValue(){
+        return value;
     }
 
 }
