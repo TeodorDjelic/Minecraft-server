@@ -3,15 +3,10 @@
  */
 package org.example;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.example.packets.PacketReader;
-import org.example.primitives.VarIntField;
+import org.example.sessions.ClientConnection;
 
 public class App {
     public String getGreeting() {
@@ -20,27 +15,29 @@ public class App {
 
     public static void main(String[] args) {
 
-        String hostName = args.length == 0 ? "127.0.0.1" : args[0];
-        int portNumber = args.length <= 1 ? 25565 : Integer.parseInt(args[1]);
+        int portNumber = args.length <= 1 ? 25565 : Integer.parseInt(args[0]);
+
+        ServerSocket serverSocket = null;
 
         try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
+            serverSocket = new ServerSocket(portNumber);
 
             while(true){
                 Socket clientSocket = serverSocket.accept();
 
-                InputStream is = clientSocket.getInputStream();
+                ClientConnection clientConnection = new ClientConnection(clientSocket);
 
-                PacketReader.readPacket(is);
-
-                clientSocket.close();
-
+                clientConnection.start();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if(serverSocket != null && !serverSocket.isClosed())
+                    serverSocket.close();
+            } catch (IOException e) {e.printStackTrace();}
         }
 
-        System.out.println(new App().getGreeting());
     }
 }

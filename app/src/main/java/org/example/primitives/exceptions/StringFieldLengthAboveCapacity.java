@@ -1,6 +1,6 @@
 package org.example.primitives.exceptions;
 
-public class StringFieldLengthAboveCapacity extends PrimitiveException {
+public class StringFieldLengthAboveCapacity extends InvalidData {
     
     private int length;
     private int maxLength;

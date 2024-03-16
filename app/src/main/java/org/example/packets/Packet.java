@@ -1,15 +1,14 @@
 package org.example.packets;
 
-import java.io.InputStream;
+import org.example.primitives.exceptions.InvalidData;
 
-import org.example.primitives.VarIntField;
+public abstract class Packet {
 
-public abstract class Packet{
-    
-    public Packet(InputStream is, int dataLength){
-        parseData(is, dataLength);
+    public Packet(PacketData packetData) throws InvalidData{
+        setPacketData(packetData);
     }
 
-    protected abstract void parseData(InputStream is, int dataLength);
+    public abstract PacketData getPacketData();
+    protected abstract void setPacketData(PacketData packetData) throws InvalidData;
 
 }

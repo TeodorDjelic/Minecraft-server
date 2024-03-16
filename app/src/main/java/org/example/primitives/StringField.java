@@ -1,64 +1,56 @@
 package org.example.primitives;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
-import org.example.binary.Masks;
+import org.example.primitives.exceptions.InvalidData;
+import org.example.primitives.exceptions.InvalidStringFieldFormat;
 import org.example.primitives.exceptions.StringFieldLengthAboveCapacity;
 
-public class StringField {
+public class StringField extends Field<String>{
     
     private static final int MAX_MAX_STRING_LENGTH = 32767;
 
-    private String string = "";
-
-    public StringField(InputStream is, int maxLength) throws IOException, StringFieldLengthAboveCapacity{
-        VarIntField length = new VarIntField(is);
-
-        if(length.getValue() > maxLength || maxLength > MAX_MAX_STRING_LENGTH){
-            throw new StringFieldLengthAboveCapacity(length.getValue(), maxLength);
-        }
-
-        for(int i = 0; i < length.getValue(); i++){
-            char c = getChar(is);
-
-            if(c > '\uFFFF'){
-                i++;
-            }
-
-            string += c;
-        }
-
+    public StringField(byte[] _data, int _maxLength) throws InvalidData {
+        super(_data);
     }
 
-    public String getValue(){
-        return string;
+    public StringField(String _value){
+        super(_value);
     }
 
-    private static final byte TWO_BYTES_UTF8 = (byte) 0b1100_0000;
-    private static final byte THREE_BYTES_UTF8 = (byte) 0b1110_0000;
-    private static final byte FOUR_BYTES_UTF8 = (byte) 0b1111_0000;
+    @Override
+    public byte[] getBytes() {
+        VarIntField length = new VarIntField(value.length());
+        byte[] a = length.getBytes();
+        byte[] b = value.getBytes(StandardCharsets.UTF_8);
 
-    private static char getChar(InputStream is) throws IOException{
-        byte[] data = is.readNBytes(1);
+        byte[] result = Arrays.copyOf(a, a.length + b.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
 
-        if(data.length == 0){
-            throw new IOException();
-        }
-
-        byte firstByte = data[0];
-
-        int numberOfCharsLeft;
-
-        if((firstByte & Masks.THREE_MOST_SIGNIFICANT_BITS_OF_BYTE) == TWO_BYTES_UTF8){
-            
-        }
-
-        return 0;
+        return result;
     }
 
-    private static char getTheRestOfChars(InputStream is, int numberOfChars){
+    @Override
+    public void setBytes(byte[] data) throws InvalidData {
 
+        int min = Math.min(data.length, 3);
+
+        VarIntField length = new VarIntField(Arrays.copyOfRange(data, 0, min));
+
+        if(length.getValue() > MAX_MAX_STRING_LENGTH){
+            throw new StringFieldLengthAboveCapacity(length.getValue(), MAX_MAX_STRING_LENGTH);
+        }
+
+        if(length.getLength() + length.getValue() > data.length){
+            throw new InvalidStringFieldFormat();
+        }
+
+        byte[] temp = Arrays.copyOfRange(data,
+            length.getLength(),
+            length.getLength() + length.getValue());
+
+        value = new String(temp, StandardCharsets.UTF_8);
     }
 
 }
