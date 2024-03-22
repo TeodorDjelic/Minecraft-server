@@ -33,6 +33,7 @@ public class Status extends ClientState {
         packet = packeteer.receivePacket(getClientConnection().getPacketDataCommunication());
 
         if(packet instanceof PingPacket pp){
+            System.out.println("Received a ping from: " + getClientConnection().getSocketAddress());
             packeteer.sendPacket(getClientConnection().getPacketDataCommunication(), pp);
         }
 

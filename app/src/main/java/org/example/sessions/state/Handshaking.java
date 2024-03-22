@@ -42,7 +42,7 @@ public class Handshaking extends ClientState{
                 nextClientState = new Status(getClientConnection());
             }
             else if(hpacket.getNextState() == HandshakePacket.NextState.Login){
-                throw new UnsupportedOperationException("Not implemented.");
+                nextClientState = new Login(getClientConnection());
             }
             else{
                 hasAnErrorOccured = true;
